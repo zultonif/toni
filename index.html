@@ -55,17 +55,45 @@ body.invite-locked{overflow:hidden;height:100vh;height:100dvh;}
 
 /* ============ SHARED SECTION LAYOUT ============ */
 .section{position:relative;padding:5.5rem 1.5rem;overflow:hidden;}
+.section::before,.section::after{
+  content:'';position:absolute;border-radius:50%;pointer-events:none;z-index:0;
+  filter:blur(60px);will-change:transform;
+}
+.section::before{
+  top:-12%;left:-12%;width:52vw;height:52vw;max-width:560px;max-height:560px;
+  background:radial-gradient(circle, var(--gold-light) 0%, rgba(234,217,166,0) 72%);
+  opacity:.32;animation:sectionGlowA 30s ease-in-out infinite;
+}
+.section::after{
+  bottom:-14%;right:-10%;width:40vw;height:40vw;max-width:440px;max-height:440px;
+  background:radial-gradient(circle, var(--sage-light) 0%, rgba(222,195,184,0) 72%);
+  opacity:.24;animation:sectionGlowB 36s ease-in-out infinite;
+}
+#countdown::before,#closing::before{
+  background:radial-gradient(circle, var(--gold) 0%, rgba(199,162,78,0) 72%);opacity:.22;
+}
+#countdown::after,#closing::after{
+  background:radial-gradient(circle, var(--clay) 0%, rgba(122,58,62,0) 72%);opacity:.16;
+}
+@keyframes sectionGlowA{
+  0%{transform:translate(0%,0%);}
+  33%{transform:translate(38%,22%);}
+  66%{transform:translate(12%,46%);}
+  100%{transform:translate(0%,0%);}
+}
+@keyframes sectionGlowB{
+  0%{transform:translate(0%,0%);}
+  40%{transform:translate(-28%,-22%);}
+  72%{transform:translate(-10%,-42%);}
+  100%{transform:translate(0%,0%);}
+}
+@media (max-width:600px){
+  .section::before,.section::after{filter:blur(42px);}
+  .section::before{opacity:.24;}
+  .section::after{opacity:.18;}
+}
 .section-inner{max-width:920px;margin:0 auto;position:relative;z-index:2;}
 .section--dark{background:var(--forest);color:var(--cream);}
-
-/* Sambungan lembut di batas terang <-> gelap, supaya scroll terasa satu alur
-   (bukan potongan slide) — warna section sebelumnya "meleleh" turun sedikit
-   ke section berikutnya lalu memudar. */
-/* Sambungan di batas terang <-> gelap: lengkung solid warna section sebelumnya,
-   BUKAN gradasi blend (blend lurus antar warna jauh beda hue jadi keruh/belang). */
-.section-seam{position:absolute;top:-1px;left:0;width:100%;height:58px;z-index:1;pointer-events:none;display:block;}
-.section-seam path{fill:var(--cream);}
-@media (max-width:600px){.section-seam{height:40px;}}
 .section--dark .section-label{color:var(--gold-light);}
 .section-label{
   display:block;text-align:center;font-family:var(--sans);font-weight:500;
@@ -170,7 +198,7 @@ body.invite-locked{overflow:hidden;height:100vh;height:100dvh;}
 @keyframes loaderMove{0%{transform:translateX(-100%);}100%{transform:translateX(350%);}}
 
 /* ============ COVER / GATE ============ */
-#cover{position:fixed;inset:0;z-index:100;overflow:hidden;transition:opacity .9s ease;}
+#cover{position:fixed;inset:0;z-index:100;overflow:hidden;transition:opacity .6s ease;}
 #cover.is-hidden{opacity:0;pointer-events:none;visibility:hidden;}
 
 .hero-scene{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,#F0CE8E 0%,#E39F5E 26%,#BD6650 48%,#7C4147 70%,var(--forest-deep) 100%);}
@@ -299,8 +327,7 @@ body.invite-open .cover__content{opacity:0;transform:translateY(-30px) scale(1.0
 
 .ship{
   position:absolute;bottom:18%;left:-18%;width:clamp(110px,26vw,190px);z-index:2;
-  animation:shipSail 7.6s var(--ease) forwards paused;
-  transform-origin:50% 65%;
+  animation:shipSail 6.8s var(--ease) forwards paused;
 }
 #cover.show-bridge .ship{animation-play-state:running;}
 .ship svg{width:100%;overflow:visible;display:block;}
@@ -311,31 +338,13 @@ body.invite-open .cover__content{opacity:0;transform:translateY(-30px) scale(1.0
 .ship__sail--jib{fill:var(--cream-dim);}
 .ship__flag{fill:var(--clay);}
 @keyframes shipSail{
-  0%{left:-18%;transform:translateY(0) scale(1) rotate(-1.6deg);opacity:1;}
-  14%{transform:translateY(-9px) scale(1) rotate(1.2deg);}
-  28%{transform:translateY(-2px) scale(1) rotate(-1deg);}
-  42%{transform:translateY(-10px) scale(1) rotate(1.3deg);}
-  56%{left:18%;transform:translateY(-3px) scale(1) rotate(-1.1deg);}
-  68%{left:38%;transform:translateY(-10px) scale(1.15) rotate(-.4deg);}
-  80%{left:48%;transform:translateY(-30px) scale(2) rotate(0deg);opacity:1;}
-  92%{left:50%;transform:translateY(-58px) scale(3.4) rotate(0deg);opacity:.8;}
-  100%{left:50%;transform:translateY(-82px) scale(4.6) rotate(0deg);opacity:0;}
-}
-
-/* Kilau hangat yang muncul tepat saat kapal membesar mendekat —
-   jembatan mulus dari suasana malam pelayaran menuju undangan,
-   menggantikan potongan mendadak. */
-.bridge-flash{
-  position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;
-  background:radial-gradient(circle at 50% 62%, rgba(255,251,240,1) 0%, rgba(250,243,229,.94) 32%, rgba(234,217,166,0) 70%);
-  animation:bridgeFlash 7.6s ease-in forwards paused;
-}
-#cover.show-bridge .bridge-flash{animation-play-state:running;}
-@keyframes bridgeFlash{
-  0%,70%{opacity:0;}
-  83%{opacity:.32;}
-  93%{opacity:.72;}
-  100%{opacity:1;}
+  0%{left:-18%;transform:translateY(0) rotate(-1.6deg);}
+  18%{transform:translateY(-9px) rotate(1.2deg);}
+  36%{transform:translateY(-2px) rotate(-1deg);}
+  54%{transform:translateY(-10px) rotate(1.3deg);}
+  72%{transform:translateY(-3px) rotate(-1.1deg);}
+  88%{transform:translateY(-8px) rotate(1deg);}
+  100%{left:106%;transform:translateY(0) rotate(-1.6deg);}
 }
 
 .bridge-text{
@@ -390,6 +399,7 @@ body.content-visible #mainContent{opacity:1;transform:translateY(0);}
 
 /* ============ COUNTDOWN ============ */
 #countdown{background:var(--forest);color:var(--cream);position:relative;}
+#countdown::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%, rgba(232,213,160,.12), transparent 60%);}
 .countdown{display:flex;justify-content:center;gap:.9rem;flex-wrap:wrap;position:relative;z-index:2;}
 .countdown__box{
   background:rgba(251,246,234,.06);border:1px solid rgba(232,213,160,.35);border-radius:14px;
@@ -675,8 +685,6 @@ body.content-visible #mainContent{opacity:1;transform:translateY(0);}
       </svg>
     </div>
 
-    <div class="bridge-flash" aria-hidden="true"></div>
-
     <div class="bridge-text">
       <p class="bridge-eyebrow">Menuju Babak Baru</p>
       <p class="bridge-line">Dua Hati, Satu Haluan</p>
@@ -704,6 +712,7 @@ body.content-visible #mainContent{opacity:1;transform:translateY(0);}
     <div class="section-inner">
       <span class="section-label reveal">Mempelai</span>
       <h2 class="section-title reveal">Dengan Penuh Syukur</h2>
+      <div class="divider reveal"><i></i></div>
 
       <div class="couple-grid">
         <div class="couple-card reveal">
@@ -733,7 +742,6 @@ body.content-visible #mainContent{opacity:1;transform:translateY(0);}
 
   <!-- COUNTDOWN -->
   <section id="countdown" class="section">
-    <svg class="section-seam" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,32 C1080,78 360,78 0,32 Z" style="fill:var(--cream)"/></svg>
     <div class="section-inner">
       <span class="section-label reveal">Menghitung Hari</span>
       <h2 class="section-title reveal">Menuju Hari Bahagia Kami</h2>
@@ -750,7 +758,6 @@ body.content-visible #mainContent{opacity:1;transform:translateY(0);}
   <!-- EVENTS -->
   <!-- GANTI tanggal, jam, dan lokasi acara sesuai rencana kalian -->
   <section id="events" class="section">
-    <svg class="section-seam" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,32 C1080,78 360,78 0,32 Z" style="fill:var(--forest)"/></svg>
     <div class="section-inner">
       <span class="section-label reveal">Rangkaian Acara</span>
       <h2 class="section-title reveal">Garden Party Pernikahan</h2>
@@ -856,7 +863,6 @@ body.content-visible #mainContent{opacity:1;transform:translateY(0);}
 
   <!-- CLOSING -->
   <section id="closing" class="section">
-    <svg class="section-seam" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 L1440,0 L1440,32 C1080,78 360,78 0,32 Z" style="fill:var(--cream-dim)"/></svg>
     <div class="section-inner">
       <img src="logo-zb.png" alt="Zultoni &amp; Beska" class="closing-logo reveal">
       <svg class="closing-leaf reveal" viewBox="0 0 32 32" fill="currentColor"><path d="M16 2C7 9 3 19 16 30C29 19 25 9 16 2Z"/></svg>
@@ -1004,11 +1010,10 @@ body.content-visible #mainContent{opacity:1;transform:translateY(0);}
       audio.play().then(()=>{ musicToggle && musicToggle.classList.add('is-playing'); }).catch(()=>{});
     }
 
-    /* Gerbang taman memberi jalan ke pelayaran singkat di malam hari;
-       kapal melaju mendekat & membesar, lalu kilau hangat menjembatani
-       ke undangan — supaya tidak berpindah mendadak. */
+    /* Gerbang taman memberi jalan ke pelayaran singkat di malam hari,
+       baru setelah itu undangan muncul — supaya tidak berpindah mendadak. */
     const toBridge = reduceMotion ? 150 : 950;
-    const toContent = reduceMotion ? 550 : 8500;
+    const toContent = reduceMotion ? 550 : 8050;
 
     setTimeout(() => {
       cover.classList.add('show-bridge');
